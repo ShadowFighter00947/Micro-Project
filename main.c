@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 #include "topic.h"
 #include "planner.h"
 #include "feedback.h"
@@ -15,6 +16,18 @@ int main()
 
     for (int i = 0; sub[i]; i++){
         sub[i] = tolower(sub[i]);
+    }
+
+    char filename[100];
+    sprintf(filename, "%s.plan", sub);
+
+    struct Topic prevTopics[20];
+    int sessions = 0;
+    int prevCount = loadLastSession(filename, prevTopics, 20, &sessions);
+
+    printf("Sessions found: %d\n", sessions);
+    for (int i = 0; i < prevCount; i++){
+        printf("[LOADED] %s | Difficulty: %d | Priority: %d | Score: %d | Time: %d min\n", prevTopics[i].name, prevTopics[i].difficulty, prevTopics[i].priority, prevTopics[i].score, prevTopics[i].allocatedTime);
     }
 
     printf("Enter Time available (in minutes):- ");
@@ -34,6 +47,14 @@ int main()
     inputTopic(&topics[i]); // This calls the function in topic.c
 }
 
+for (int i = 0; i < nos_topic; i++){
+    for (int j = 0; j < prevCount; j++){
+        if (strcmp(topics[i].name, prevTopics[j].name) == 0){
+            printf("Last session score for %s: %d%%\n", topics[i].name, prevTopics[j].score);
+        }
+    }
+}
+
 // Below section of code shows everything users has given in one go.
     printf("\nSubject: %s\n", sub);
     printf("Time available (in minutes): %d\n", time);
@@ -48,8 +69,7 @@ int main()
 
    getUserFeedback(topics, nos_topic, time);
 
-   char filename[100];
-   sprintf(filename,  "%s.plan", sub);
+   
    printf("\n[AUTO] Saving plan to: %s\n", filename);
 
    savePlanToFile(filename, sub, time, topics, nos_topic);

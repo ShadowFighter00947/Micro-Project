@@ -18,7 +18,11 @@ void allocateTime(struct Topic *topics, int count, int totalTime){
 
     // Step 2:- Allocate time based on weight.
     for (int i = 0; i < count; i++){
-        topics[i].allocatedTime = (weights[i] / totalWeight) * totalTime;
+        if (totalWeight == 0){
+            topics[i].allocatedTime = totalTime / count;
+        }else {
+            topics[i].allocatedTime = (int)((weights[i] / totalWeight) * totalTime + 0.5f);
+        }
     } 
 }
 

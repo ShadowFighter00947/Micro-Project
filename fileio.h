@@ -7,6 +7,6 @@
 void savePlanToFile(const char *filename, const char *subject, int totalTime, struct Topic *topics, int count);
 
 // Load plan from file.
-void loadPlanFromFile(const char *filename, struct Topic *topics, int *count);
+int loadLastSession(const char *filename, struct Topic *topics, int maxTopics, int *sessions);
 
 #endif
