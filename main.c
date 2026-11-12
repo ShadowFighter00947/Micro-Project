@@ -12,11 +12,37 @@ int main()
     int time, nos_topic;
 
     printf("Enter Subject:- ");
-    scanf(" %[^\n]", sub);
+    scanf(" %49[^\n]", sub);
 
+    // Clean the subject: drop arrow-key escape codes, keep only letters,
+    // digits and single spaces, and convert to lowercase.
+    char clean[50];
+    int k = 0;
     for (int i = 0; sub[i]; i++){
-        sub[i] = tolower(sub[i]);
+        if (sub[i] == 27){                       // ESC character (arrow keys etc.)
+            i++;
+            if (sub[i] == '[' || sub[i] == 'O'){
+                i++;
+                while (sub[i] && !isalpha((unsigned char)sub[i])) i++; // skip parameters
+            }
+            // sub[i] is now the final letter of the sequence; the loop's i++ skips it
+            if (sub[i] == '\0') break;
+            continue;
+        }
+        if (isalnum((unsigned char)sub[i])){
+            clean[k++] = tolower((unsigned char)sub[i]);
+        } else if (sub[i] == ' ' && k > 0 && clean[k - 1] != ' '){
+            clean[k++] = ' ';                    // keep single spaces only
+        }
     }
+    if (k > 0 && clean[k - 1] == ' ') k--;       // remove trailing space
+    clean[k] = '\0';
+
+    if (clean[0] == '\0'){
+        printf("Error: Invalid subject name.\n");
+        return 1;
+    }
+    strcpy(sub, clean);
 
     char filename[100];
     sprintf(filename, "%s.plan", sub);
@@ -37,6 +63,11 @@ int main()
     printf("Enter number of Topics:- ");
     scanf("%d", &nos_topic);
     getchar();
+
+    if(nos_topic <= 0){
+        printf("Error: Number of topics must be at least 1.\n");
+        return 1;
+    }
 
     struct Topic topics[nos_topic];
 
