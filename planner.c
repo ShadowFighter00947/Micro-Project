@@ -1,6 +1,48 @@
 #include <stdio.h>
+#include <ctype.h>
 #include "topic.h"
 #include "planner.h"
+
+static int sameName(const char *a, const char *b){
+    while(*a && *b){
+        if (tolower((unsigned char)*a) != tolower((unsigned char)*b)) return 0;
+        a++;
+        b++;
+    }
+    return *a == *b;
+}
+
+static float performanceFactor(int score){
+    if (score < 50) return 1.3f;
+    if(score <= 75) return 1.0;
+    return 0.7f;
+}
+
+static const char *reasonFor(int score){
+    if (score < 50) return "+ time (low score)";
+    if (score <= 75) return "normal time";
+    return "- time (strong score)"; 
+}
+
+void applyHistory(struct Topic *topics, int count, struct Topic *prev, int prevCount){
+    for (int i = 0; i < count; i++){
+        for (int j = 0; j < prevCount; j++){
+            if (sameName(topics[i].name, prev[j].name)){
+                int entered = topics[i].score;
+                int enteredDiff = topics[i].difficulty;
+
+                topics[i].score = (int)(entered * 0.7f + prev[j].score * 0.3f + 0.5f);
+                
+                if(prev[j].difficulty > 0){
+                    topics[i].difficulty = (int)(enteredDiff * 0.7f + prev[j].difficulty * 0.3f + 0.5f);
+                }
+                printf("[HISTORY] %s: entered %d%%, last session %d%%, using %d%%\n", topics[i].name, entered, prev[j].score, topics[i].score);
+                printf("[HISTORY] %s: difficulty entered %d, last feedback %d, using %d\n", topics[i].name , enteredDiff, prev[j].difficulty, topics[i].difficulty);
+                break;
+            }
+        }
+    }
+}
 
 void allocateTime(struct Topic *topics, int count, int totalTime){
     // Step 1:- Calculate weight for each topic.
@@ -12,7 +54,7 @@ void allocateTime(struct Topic *topics, int count, int totalTime){
         float priority = topics[i].priority * 0.3;
         float score = (100 - topics[i].score) * 0.4;
 
-        weights[i] = difficulty + priority + score;
+        weights[i] = (difficulty + priority + score) * performanceFactor(topics[i].score);
         totalWeight += weights[i];
     }
 
@@ -37,6 +79,7 @@ void displayStudyplan(struct Topic *topics, int count){
         printf("   Priority   : %d/5\n", topics[i].priority);
         printf("   Score      : %d%%\n", topics[i].score);
         printf("   Time Given : %d min\n", topics[i].allocatedTime);
+        printf("   Reason     : %s\n", reasonFor(topics[i].score));
         printf("   --------------------\n");
     }
 }
