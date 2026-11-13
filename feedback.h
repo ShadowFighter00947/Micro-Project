@@ -5,5 +5,6 @@
 
 void getUserFeedback(struct Topic *topics, int count, int totalTime);
 void adjustPlan(struct Topic *topics, int count, int totalTime);
+void askDifficultyFeedback(struct Topic *topics, int count);
 
 #endif
