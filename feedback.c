@@ -54,3 +54,23 @@ void adjustPlan(struct Topic *topics, int count, int totalTime){
     allocateTime(topics, count, totalTime);
     displayStudyplan(topics, count);
 }
+
+void askDifficultyFeedback(struct Topic *topics, int count){
+    printf("\nHow hard whas each topic?\n");
+    printf("1 = Very Easy, 2 = Easy, 3 = Medium, 4 = hard, 5 = Very Hard\n");
+
+    for (int i = 0; i < count; i++){
+        int rating = 0;
+
+        while(1){
+            printf(" %s (1-5): ", topics[i].name);
+            if(scanf("%d", &rating) == 1 && rating >= 1 && rating <= 5) break;
+
+            printf("Please enter a number from 1 to 5.\n");
+            int c;
+            while((c = getchar()) != '\n' && c != EOF);
+        }
+
+        topics[i].difficulty = rating;
+    }
+}
