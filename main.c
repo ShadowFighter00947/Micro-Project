@@ -5,6 +5,7 @@
 #include "planner.h"
 #include "feedback.h"
 #include "fileio.h"
+#include "progress.h"
 
 int main()
 {
@@ -78,13 +79,7 @@ int main()
     inputTopic(&topics[i]); // This calls the function in topic.c
 }
 
-for (int i = 0; i < nos_topic; i++){
-    for (int j = 0; j < prevCount; j++){
-        if (strcmp(topics[i].name, prevTopics[j].name) == 0){
-            printf("Last session score for %s: %d%%\n", topics[i].name, prevTopics[j].score);
-        }
-    }
-}
+
 
 // Below section of code shows everything users has given in one go.
     printf("\nSubject: %s\n", sub);
@@ -94,11 +89,15 @@ for (int i = 0; i < nos_topic; i++){
     printf("\nTopics:\n");
 
    displayTopics(topics, nos_topic); // This calls the function in topic.
+   applyHistory(topics, nos_topic, prevTopics, prevCount);
 
    allocateTime(topics, nos_topic, time);
    displayStudyplan(topics, nos_topic);
 
    getUserFeedback(topics, nos_topic, time);
+   askDifficultyFeedback(topics, nos_topic);
+
+   showProgress(topics, nos_topic);
 
    
    printf("\n[AUTO] Saving plan to: %s\n", filename);
