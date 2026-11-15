@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdlib.h>
 #include "topic.h"
 #include "planner.h"
 #include "feedback.h"
@@ -113,7 +114,16 @@ int main()
    uiSection("PROGRESS");
    showProgress(topics, nos_topic); 
 
-   savePlanToFile(filename, sub, time, topics, nos_topic);
+     savePlanToFile(filename, sub, time, topics, nos_topic);
+
+    printf("\nPlan saved to %s\n\n", filename);
+
+#ifdef _WIN32
+    system("pause");              // Shows "Press any key to continue . . ."
+#else
+    printf("Press Enter to exit...");
+    getchar();
+#endif
 
     return 0;
 }
