@@ -15,6 +15,9 @@ int main()
     char sub[50]; // Takes Max 50 characters.
     int time, nos_topic;
 
+    uiSection("AI/ML STUDY PLANNER");
+    printf("Plan your study time, track your progress, and improve each session.\n\n");
+
     printf("Enter Subject:- ");
     scanf(" %49[^\n]", sub);
 
