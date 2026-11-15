@@ -3,13 +3,16 @@
 #include <string.h>
 #include "topic.h"
 #include "fileio.h"
+#include "ui.h"
 
 void savePlanToFile(const char *filename, const char *subject, int totalTime, struct Topic *topics, int count){
     FILE *fptr;
-    fptr = fopen(filename, "a"); // User chooses filename
+    fptr = fopen(filename, "a"); 
 
     if (fptr == NULL){
-        printf("Error: Could not save to '%s'!\n", filename);
+        char err[200];
+        snprintf(err, sizeof err, "Could not save to '%s'!", filename);
+        uiMessage("ERROR", err);
         return;
     }
 
@@ -35,7 +38,9 @@ void savePlanToFile(const char *filename, const char *subject, int totalTime, st
     fprintf(fptr, "\n\n");
 
     fclose(fptr);
-    printf("\n[SYSTEM] Plan saved successfully to '%s'!\n", filename);
+    char ok[200];
+    snprintf(ok, sizeof ok, " Plan saved successfully to '%s'", filename);
+    uiMessage("SAVED", ok);
 }
 
 int loadLastSession(const char *filename, struct Topic *topics, int maxTopics, int *sessions)

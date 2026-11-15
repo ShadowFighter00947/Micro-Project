@@ -14,7 +14,7 @@ static int sameName(const char *a, const char *b){
 
 static float performanceFactor(int score){
     if (score < 50) return 1.3f;
-    if(score <= 75) return 1.0;
+    if(score <= 75) return 1.0f;
     return 0.7f;
 }
 

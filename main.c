@@ -6,6 +6,8 @@
 #include "feedback.h"
 #include "fileio.h"
 #include "progress.h"
+#include "agent.h"
+#include "ui.h"
 
 int main()
 {
@@ -52,23 +54,26 @@ int main()
     int sessions = 0;
     int prevCount = loadLastSession(filename, prevTopics, 20, &sessions);
 
+    uiSection("HISTORY");
     printf("Sessions found: %d\n", sessions);
     for (int i = 0; i < prevCount; i++){
         printf("[LOADED] %s | Difficulty: %d | Priority: %d | Score: %d | Time: %d min\n", prevTopics[i].name, prevTopics[i].difficulty, prevTopics[i].priority, prevTopics[i].score, prevTopics[i].allocatedTime);
     }
 
     printf("Enter Time available (in minutes):- ");
-    scanf("%d", &time);
+
+    if (scanf("%d", &time) != 1 || time <= 0){
+        printf("ERROR: Time must be at least 1 minute.\n");
+        return 1;
+    }
     getchar();
 
     printf("Enter number of Topics:- ");
-    scanf("%d", &nos_topic);
-    getchar();
-
-    if(nos_topic <= 0){
-        printf("Error: Number of topics must be at least 1.\n");
+    if (scanf("%d", &nos_topic) != 1 || nos_topic <= 0){
+        printf("ERROR: Number of topics must be at least 1.\n");
         return 1;
     }
+    getchar();
 
     struct Topic topics[nos_topic];
 
@@ -82,25 +87,31 @@ int main()
 
 
 // Below section of code shows everything users has given in one go.
-    printf("\nSubject: %s\n", sub);
-    printf("Time available (in minutes): %d\n", time);
-    printf("Number of Topics: %d\n", nos_topic);
+    uiSection("SETUP");
+    printf("Subject: %s\n", sub);
+    printf("Time available: %d min\n", time);
+    printf("Topics: %d\n", nos_topic);
 
-    printf("\nTopics:\n");
+    uiSection("TOPICS");
 
    displayTopics(topics, nos_topic); // This calls the function in topic.
    applyHistory(topics, nos_topic, prevTopics, prevCount);
 
-   allocateTime(topics, nos_topic, time);
-   displayStudyplan(topics, nos_topic);
+   int actions[nos_topic];
+   uiSection("AGENT");
+   runAgent(topics, nos_topic, prevTopics, prevCount, actions);
 
-   getUserFeedback(topics, nos_topic, time);
+   allocateTime(topics, nos_topic, time);
+   applyTimeLimits(topics, nos_topic, time, actions);
+
+   uiSection("STUDY PLAN");
+   printStudyTable(topics, nos_topic, actions);
+
+   getUserFeedback(topics, nos_topic, time, actions);
    askDifficultyFeedback(topics, nos_topic);
 
-   showProgress(topics, nos_topic);
-
-   
-   printf("\n[AUTO] Saving plan to: %s\n", filename);
+   uiSection("PROGRESS");
+   showProgress(topics, nos_topic); 
 
    savePlanToFile(filename, sub, time, topics, nos_topic);
 

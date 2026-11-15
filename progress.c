@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "topic.h"
 #include "progress.h"
+#include "ui.h"
 
 #define REVISION_THRESHOLD 50 // Scores below this need revision.
 
@@ -17,10 +18,8 @@ void showProgress(const struct Topic *topics, int count){
         if (topics[i].score < topics[weakest].score) weakest = i;
     }
 
-    printf("\n=============================\n");
-    printf("       PROGRESS SUMMARY      \n");
-    printf("=============================\n");
     printf("Average score : %.1f%%\n", (float)total / count);
+    printProgressBar(total / count); // Whole-number percent for bar.
     printf("Strongest     : %s (%d%%)\n", topics[strongest].name, topics[strongest].score);
     printf("Weakest       : %s (%d%%)\n", topics[weakest].name, topics[weakest].score);
 
